@@ -1,0 +1,411 @@
+
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Бататгал</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #333;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .welcome-section {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .welcome-message {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+      margin-bottom: 30px;
+    }
+
+    .page-title {
+      color: white;
+      font-size: 3rem;
+      font-weight: 300;
+      margin-bottom: 15px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .page-subtitle {
+      color: rgba(255,255,255,0.9);
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin-top: 30px;
+    }
+
+    .topic-card {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topic-card:hover {
+      transform: translateY(-10px) scale(1.02);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+
+    .topic-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .topic-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .topic-number {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(45deg, #667eea, #764ba2);
+      color: white;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .topic-image {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .topic-card:hover .topic-image {
+      transform: scale(1.05);
+    }
+
+    .topic-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .topic-description {
+      color: #666;
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 15px;
+    }
+
+    .topic-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #eee;
+    }
+
+    .difficulty {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .difficulty-stars {
+      color: #ffd700;
+    }
+
+    .topic-icon {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      z-index: 1000;
+    }
+
+    .back-btn:hover {
+      background: white;
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .topic-card {
+      animation: fadeInUp 0.6s ease;
+      animation-fill-mode: both;
+    }
+
+    .topic-card:nth-child(1) { animation-delay: 0.1s; }
+    .topic-card:nth-child(2) { animation-delay: 0.2s; }
+    .topic-card:nth-child(3) { animation-delay: 0.3s; }
+    .topic-card:nth-child(4) { animation-delay: 0.4s; }
+    .topic-card:nth-child(5) { animation-delay: 0.5s; }
+    .topic-card:nth-child(6) { animation-delay: 0.6s; }
+    .topic-card:nth-child(7) { animation-delay: 0.7s; }
+    .topic-card:nth-child(8) { animation-delay: 0.8s; }
+    .topic-card:nth-child(9) { animation-delay: 0.9s; }
+    .topic-card:nth-child(10) { animation-delay: 1.0s; }
+
+    @media (max-width: 768px) {
+      .topics-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      
+      .page-title {
+        font-size: 2.5rem;
+      }
+      
+      .topic-card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-btn" onclick="history.back()">←</button>
+  
+  <div class="container">
+    <div class="welcome-section">
+      <div id="welcome-message"></div>
+      <h1 class="page-title">📚 Бататгал сэдвүүд</h1>
+      <p class="page-subtitle">Функц ба графикийн талаарх мэдлэгээ шалгаарай</p>
+    </div>
+
+    <div class="topics-grid">
+      <div class="topic-card" onclick="openTopic('topic1.html')">
+        <div class="topic-number">1</div>
+        <span class="topic-icon">📊</span>
+        <img src="images/funcuguharga.jfif" alt="Функцийг өгөх аргууд" class="topic-image">
+        <h3 class="topic-title">Функцийг өгөх аргууд</h3>
+        <p class="topic-description">Функцийг янз бүрийн аргаар илэрхийлэх боломжтой арга техникуудыг судлана.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic2.html')">
+        <div class="topic-number">2</div>
+        <span class="topic-icon">📈</span>
+        <img src="images/zeregtfunc.png" alt="Зэрэгт функц" class="topic-image">
+        <h3 class="topic-title">Зэрэгт функц түүний график</h3>
+        <p class="topic-description">Зэрэгт функцүүдийн онцлог ба тэдгээрийн график дүрслэлийг авч үзнэ.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic3.html')">
+        <div class="topic-number">3</div>
+        <span class="topic-icon">📐</span>
+        <img src="images/bosooshuluun.jpg" alt="Босоо шулууны шинжүүр" class="topic-image">
+        <h3 class="topic-title">Босоо шулууны шинжүүр</h3>
+        <p class="topic-description">График функцийн график эсэхийг тодорхойлох босоо шулууны шинжүүрийг ашиглана.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic4.html')">
+        <div class="topic-number">4</div>
+        <span class="topic-icon">🔄</span>
+        <img src="images/hariltsannegutga.png" alt="Харилцан нэг утгатай функц" class="topic-image">
+        <h3 class="topic-title">Харилцан нэг утгатай функц</h3>
+        <p class="topic-description">Нэг орцонд нэг үр дүн өгдөг функцүүдийн онцлогийг судална.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic5.html')">
+        <div class="topic-number">5</div>
+        <span class="topic-icon">🔗</span>
+        <img src="images/dawhar.jfif" alt="Давхар функц" class="topic-image">
+        <h3 class="topic-title">Давхар функц</h3>
+        <p class="topic-description">Хоёр болон олон функцийг хослуулан шинэ функц үүсгэх аргыг сурна.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic6.html')">
+        <div class="topic-number">6</div>
+        <span class="topic-icon">↩️</span>
+        <img src="images/urwuufunc.jpg" alt="Урвуу функц" class="topic-image">
+        <h3 class="topic-title">Урвуу функц</h3>
+        <p class="topic-description">Өгөгдсөн функцэд харгалзах урвуу функцийг олох аргуудыг сурна.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic7.html')">
+        <div class="topic-number">7</div>
+        <span class="topic-icon">⚡</span>
+        <img src="images/urwuufunc.jpg" alt="Урвуу функцийн чанар" class="topic-image">
+        <h3 class="topic-title">Урвуу функцийн чанар</h3>
+        <p class="topic-description">Урвуу функцийн математик шинж чанар ба хэрэглээг нарийвчлан судална.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic8.html')">
+        <div class="topic-number">8</div>
+        <span class="topic-icon">📊</span>
+        <img src="images/usuhbabuurah.png" alt="Өсөх ба буурах функц" class="topic-image">
+        <h3 class="topic-title">Өсөх ба буурах функц</h3>
+        <p class="topic-description">Функцийн өсөх, буурах шинжийг тодорхойлж, график дээр тэмдэглэнэ.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic9.html')">
+        <div class="topic-number">9</div>
+        <span class="topic-icon">📏</span>
+        <img src="images/usuhbabuurah.png" alt="Функцийн өсөх, буурах завсар" class="topic-image">
+        <h3 class="topic-title">Функцийн өсөх, буурах завсар</h3>
+        <p class="topic-description">Функцийн өсөх, буурах завсаруудыг тодорхойлох арга техникийг эзэмшинэ.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="topic-card" onclick="openTopic('topic10.html')">
+        <div class="topic-number">10</div>
+        <span class="topic-icon">⚖️</span>
+        <img src="images/tegsh.png" alt="Тэгш ба сондгой функц" class="topic-image">
+        <h3 class="topic-title">Тэгш ба сондгой функц</h3>
+        <p class="topic-description">Функцийн тэгш болон сондгой байдлыг шалгах шалгуур үзүүлэлтийг судална.</p>
+        <div class="topic-meta">
+          <div class="difficulty">
+            <span>Түвшин:</span>
+            <span class="difficulty-stars">⭐⭐⭐</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Математик хичээл сонгосон үед сайхан мэндчилгээ үзүүлэх
+    const studentName = localStorage.getItem('studentName');
+    const selectedSubject = localStorage.getItem('selectedSubject');
+    
+    if (studentName && selectedSubject === 'math') {
+      const welcomeDiv = document.getElementById('welcome-message');
+      welcomeDiv.innerHTML = `
+        <div class="welcome-message">
+          <h2 style="color: #333; margin-bottom: 15px;">🎉 Сайн байна уу, ${studentName}!</h2>
+          <p style="color: #666; font-size: 1.1rem; line-height: 1.5;">
+            📐 Математикийн хичээлдээ тавтай морилно уу!<br>
+            🎯 Та функцийн талаар суралцахад бэлэн үү?<br>
+            💪 Доорх сэдвүүдээс сонгоод эхлээрэй!
+          </p>
+        </div>
+      `;
+    }
+    
+    function openTopic(file) {
+      // Сонгосон сэдвийн анимаци
+      event.target.closest('.topic-card').style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        window.location.href = file;
+      }, 200);
+    }
+  </script>
+</body>
+</html>

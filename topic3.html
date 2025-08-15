@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <title>Босоо шулууны шинжүүр</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e0e0e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    p {
+      font-weight: bold;
+      margin-top: 20px;
+      color: #444;
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+      margin: 15px 0;
+    }
+
+    label {
+      display: block;
+      background: #f1f3f5;
+      padding: 10px;
+      border-radius: 8px;
+      margin: 8px 0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    label:hover {
+      background: #dee2e6;
+    }
+
+    input[type="radio"] {
+      margin-right: 10px;
+      transform: scale(1.2);
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Босоо шулууны шинжүүр</h1>
+    <form onsubmit="checkAnswer(event)">
+      <p>Дараах муруйнуудаас аль нь функцийн график болох вэ?</p>
+      <img src="images/12.jpg" alt="Муруй график"><br>
+      <label><input type="radio" name="q1" value="a"> 8-с бусад</label>
+      <label><input type="radio" name="q1" value="b"> 1,2,3,4</label>
+      <label><input type="radio" name="q1" value="c"> 5,6,7,8</label>
+      <button type="submit">Илгээх</button>
+    </form>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function checkAnswer(e){
+      e.preventDefault();
+      const name = localStorage.getItem('studentName') || 'Нэргүй';
+      const val = document.querySelector('input[name="q1"]:checked');
+      const correct = val && val.value === 'a' ? 1 : 0;
+      document.getElementById('result').textContent = `${name}, та ${correct}/1 зөв хариуллаа.`;
+    }
+  </script>
+</body>
+</html>

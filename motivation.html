@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <title>Сэдэлжүүлэлт</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .subjects { 
+      display: flex; 
+      justify-content: center; 
+      gap: 30px; 
+      margin-top: 30px; 
+      flex-wrap: wrap;
+    }
+    .subject-card { 
+      border: 2px solid rgba(255,255,255,0.3); 
+      border-radius: 15px; 
+      padding: 20px; 
+      width: 200px; 
+      cursor: pointer; 
+      background: rgba(255,255,255,0.1);
+      transition: all 0.3s ease;
+    }
+    .subject-card:hover {
+      transform: translateY(-5px);
+      background: rgba(255,255,255,0.2);
+    }
+    .subject-card img { 
+      width: 100%; 
+      border-radius: 10px; 
+      margin-bottom: 10px;
+    }
+    .subject-card h3 {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    .greeting {
+      font-size: 28px;
+      margin-bottom: 20px;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+    #dailyFact {
+      margin: 30px auto; 
+      font-style: italic; 
+      color: #fff; 
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 4px solid #ffd700;
+      max-width: 600px;
+      font-size: 16px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+      width: 100px;
+      text-align: center;
+      margin-right: 10px;
+    }
+    button {
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 id="greeting" class="greeting"></h1>
+    <div class="subjects">
+      <div class="subject-card" onclick="selectSubject('math')">
+        <img src="images/math.jpg" alt="Математик">
+        <h3>📚 Математик</h3>
+        <p>Сонирхолтой бодлого</p>
+      </div>
+      <div class="subject-card" onclick="selectSubject('science')">
+        <img src="images/science.jpg" alt="Шинжлэх ухаан">
+        <h3>🔬 Шинжлэх ухаан</h3>
+        <p>Байгалийн нууц</p>
+      </div>
+      <div class="subject-card" onclick="selectSubject('history')">
+        <img src="images/history.jpg" alt="Түүх">
+        <h3>📖 Түүх</h3>
+        <p>Өнгөрсөн цагийн ухаан</p>
+      </div>
+    </div>
+
+    <div id="dailyFact"></div>
+    <div id="quizArea"></div>
+  </div>
+
+  <script>
+    const name = localStorage.getItem('studentName');
+    const studentCode = localStorage.getItem('studentCode');
+
+    if (name) {
+      document.getElementById('greeting').textContent =
+        `Сайн байна уу, ${name}! Хичээлээ сонгоно уу? 📚`;
+    } else if (studentCode) {
+      document.getElementById('greeting').textContent = `Багш тавтай морил!`;
+    } else {
+      window.location.href = 'index.html';
+    }
+
+    // Сонирхолтой математик бодлогууд
+    const mathProblems = [
+      { question: "5 + 7 * 2 = ?", answer: 19 },
+      { question: "x + 3 = 10. x хэд вэ?", answer: 7 },
+      { question: "12 - 4 / 2 = ?", answer: 10 },
+      { question: "3 * (2 + 5) = ?", answer: 21 },
+      { question: "15 / 3 + 2 = ?", answer: 7 }
+    ];
+
+    function selectSubject(subject) {
+      localStorage.setItem('selectedSubject', subject);
+
+      if (subject === 'math') {
+        // Санамсаргүй бодлого сонгох
+        const randomIndex = Math.floor(Math.random() * mathProblems.length);
+        const todaysProblem = mathProblems[randomIndex];
+
+        document.getElementById('dailyFact').textContent = "💡 Өнөөдрийн бодлого: " + todaysProblem.question;
+
+        document.getElementById('quizArea').innerHTML = `
+          <div style="margin-top:20px;">
+            <input type="text" id="userAnswer" placeholder="Хариулт оруулна уу">
+            <button onclick="checkAnswer(${todaysProblem.answer})">✔️ Баталгаажуулах</button>
+          </div>
+          <div id="feedback" style="margin-top:15px; font-size:16px;"></div>
+          <div id="proceedButton" style="margin-top:20px;"></div>
+        `;
+      } else {
+        alert('Энэ хичээл хараахан бэлэн болоогүй байна.');
+      }
+    }
+
+    function checkAnswer(correctAnswer) {
+      const userAns = Number(document.getElementById('userAnswer').value);
+      const feedback = document.getElementById('feedback');
+      if (userAns === correctAnswer) {
+        feedback.textContent = "✅ Зөв хариулт! Бататгал хэсэг рүү шилжих товч идэвхжлээ.";
+        document.getElementById('proceedButton').innerHTML = `
+          <button onclick="proceedToQuiz()" 
+                  style="background: linear-gradient(45deg, #ff6b6b, #ee5a24); 
+                         color: white; 
+                         border: none; 
+                         padding: 15px 30px; 
+                         font-size: 18px; 
+                         border-radius: 25px;">
+            🚀 Бататгал хэсэг рүү шилжих
+          </button>
+        `;
+      } else {
+        feedback.textContent = "❌ Буруу хариулт. Дахин оролдоно уу.";
+      }
+    }
+
+    function proceedToQuiz() {
+      const studentCode = localStorage.getItem('studentCode');
+      if (studentCode && window.saveScore) {
+        window.saveScore(studentCode, 0);
+      }
+      window.location.href = 'batatgal.html';
+    }
+  </script>
+</body>
+</html>

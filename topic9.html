@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8">
+  <title>Функцийн өсөх, буурах завсар</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e0e0e0);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: #fff;
+      padding: 30px 40px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      max-width: 600px;
+      width: 90%;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    p {
+      font-weight: bold;
+      color: #444;
+    }
+
+    textarea {
+      width: 90%;
+      height: 100px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+      font-size: 14px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 25px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      transition: background 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 16px;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Функцийн өсөх, буурах завсар</h1>
+    <p>Даалгаврууд энд оруулна</p>
+    <textarea id="answer" placeholder="Энд хариултаа бичнэ үү..."></textarea><br>
+    <button onclick="checkAnswer()">Илгээх</button>
+    <p id="result"></p>
+  </div>
+
+  <script>
+    function checkAnswer(){
+      const name = localStorage.getItem('studentName') || 'Нэргүй';
+      const answer = document.getElementById('answer').value.trim();
+      if(answer === ""){
+        document.getElementById('result').textContent = "Хариулт оруулна уу.";
+        return;
+      }
+      document.getElementById('result').textContent = `${name}, таны хариулт бүртгэгдлээ.`;
+    }
+  </script>
+</body>
+</html>

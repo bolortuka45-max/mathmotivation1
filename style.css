@@ -1,0 +1,38 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 20px;
+  background-color: #f4f4f4;
+}
+
+input, select, button {
+  padding: 10px;
+  font-size: 16px;
+  margin: 5px;
+}
+
+#correct-answer {
+  margin-top: 15px;
+  font-weight: bold;
+  color: green;
+}
+
+#attendance-msg {
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+}
+
+.success {
+  color: green;
+}
+
+img {
+  width: 300px;
+  height: auto;
+  border-radius: 10px;
+  margin-top: 10px;
+}
