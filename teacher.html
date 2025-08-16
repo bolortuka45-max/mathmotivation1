@@ -1,146 +1,110 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-  <meta charset="UTF-8">
-  <title>Realtime Attendance & Scores</title>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
+<meta charset="UTF-8">
+<title>Багшийн Самбар</title>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
-    // Firebase тохиргоо
-    const firebaseConfig = {
-      apiKey: "AIzaSyAmxVtMKNhljn1ITsoNRPvpYudivEFRyJw",
-      authDomain: "mathmotivation-95bfd.firebaseapp.com",
-      databaseURL: "https://mathmotivation-95bfd-default-rtdb.firebaseio.com/",
-      projectId: "mathmotivation-95bfd",
-      storageBucket: "mathmotivation-95bfd.appspot.com",
-      messagingSenderId: "727534124610",
-      appId: "1:727534124610:web:32f4b7ef3d646ea49f77db"
-    };
+// Firebase тохиргоо
+const firebaseConfig = {
+  apiKey: "AIzaSyAmxVtMKNhljn1ITsoNRPvpYudivEFRyJw",
+  authDomain: "mathmotivation-95bfd.firebaseapp.com",
+  databaseURL: "https://mathmotivation-95bfd-default-rtdb.firebaseio.com/",
+  projectId: "mathmotivation-95bfd",
+  storageBucket: "mathmotivation-95bfd.appspot.com",
+  messagingSenderId: "727534124610",
+  appId: "1:727534124610:web:32f4b7ef3d646ea49f77db"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-    // Глобал хувьсагч
-    window.attendanceData = {};
-    window.scoresData = {};
+window.attendanceData = {};
+window.scoresData = {};
 
-    // Realtime listener
-    const attendanceRef = ref(db, 'attendanceData');
-    onValue(attendanceRef, snapshot => {
-      window.attendanceData = snapshot.val() || {};
-      if(window.updateDashboard) window.updateDashboard();
-    });
+// Realtime listener
+onValue(ref(db,'attendanceData'), snapshot => {
+  window.attendanceData = snapshot.val() || {};
+  updateDashboard();
+});
+onValue(ref(db,'scoresData'), snapshot => {
+  window.scoresData = snapshot.val() || {};
+  updateDashboard();
+});
 
-    const scoresRef = ref(db, 'scoresData');
-    onValue(scoresRef, snapshot => {
-      window.scoresData = snapshot.val() || {};
-      if(window.updateDashboard) window.updateDashboard();
-    });
+// Сурагчдын жагсаалт
+const studentsData = [
+  { "name": "Х.Амарбаясгалан", "code": "1011" },
+  { "name": "Т.Бархасбаяр", "code": "2319" },
+  { "name": "Г.Мичидмаа", "code": "2205" }
+];
 
-    // Student list
-    const studentsData = [
-      { "name": "teacher", "code": "0908" },
-      { "name": "Х.Амарбаясгалан", "code": "1011" },
-      { "name": "Т.Бархасбаяр", "code": "2319" },
-      { "name": "Г.Мичидмаа", "code": "2205" }
-    ];
+function getStudentStatus(isPresent, score){
+  if(!isPresent) return '🔴 Хичээлд ороогүй';
+  if(score>=80) return '🟢 Маш сайн';
+  if(score>=60) return '🟡 Сайн';
+  return '🔴 Анхаарал хэрэгтэй';
+}
 
-    function getStudentStatus(isPresent, score){
-      if(!isPresent) return '🔴 Хичээлд ороогүй';
-      if(score >= 80) return '🟢 Маш сайн';
-      if(score >= 60) return '🟡 Сайн';
-      return '🔴 Анхаарал хэрэгтэй';
-    }
+function updateDashboard() {
+  const tbody = document.getElementById('studentTableBody');
+  tbody.innerHTML='';
+  studentsData.forEach(student => {
+    const isPresent = !!window.attendanceData[student.code];
+    const loginTime = window.attendanceData[student.code] || '-';
+    const score = window.scoresData[student.code] || 0;
 
-    function updateDashboard() {
-      const tbody = document.getElementById('studentTableBody');
-      tbody.innerHTML = '';
-      studentsData.forEach(student => {
-        const isPresent = !!window.attendanceData[student.code];
-        const loginTime = window.attendanceData[student.code] || '-';
-        const score = window.scoresData[student.code] || 0;
+    let scoreClass = 'score-low';
+    if(score>=80) scoreClass='score-high';
+    else if(score>=60) scoreClass='score-medium';
 
-        let scoreClass = 'score-low';
-        if(score >= 80) scoreClass = 'score-high';
-        else if(score >= 60) scoreClass = 'score-medium';
+    const row = document.createElement('tr');
+    row.innerHTML=`
+      <td>${student.name}</td>
+      <td>${student.code}</td>
+      <td>${isPresent?'✅ Ирсэн':'❌ Ирээгүй'}</td>
+      <td>${loginTime}</td>
+      <td class="${scoreClass}">${score}%</td>
+      <td>${getStudentStatus(isPresent,score)}</td>
+    `;
+    tbody.appendChild(row);
+  });
+}
 
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${student.name}</td>
-          <td>${student.code}</td>
-          <td>${isPresent ? '✅ Ирсэн' : '❌ Ирээгүй'}</td>
-          <td>${loginTime}</td>
-          <td class="${scoreClass}">${score}%</td>
-          <td>${getStudentStatus(isPresent, score)}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    }
+window.updateDashboard = updateDashboard;
+</script>
 
-    window.updateDashboard = updateDashboard;
-  </script>
-
-  <style>
-    body { font-family: Arial; margin:20px; background:#f4f4f4; }
-    .container { max-width:1200px; margin:auto; background:white; padding:20px; border-radius:10px; }
-    .header { background:#4CAF50; color:white; padding:15px; border-radius:8px; text-align:center; margin-bottom:20px; }
-    table { width:100%; border-collapse:collapse; }
-    th, td { border:1px solid #ddd; padding:8px; text-align:left; }
-    th { background:#f8f9fa; }
-    .score-high { color:#27ae60; font-weight:bold; }
-    .score-medium { color:#f39c12; }
-    .score-low { color:#e74c3c; }
-  </style>
+<style>
+body{font-family:Arial;margin:20px;background:#f4f4f4;}
+.container{max-width:1200px;margin:auto;background:white;padding:20px;border-radius:10px;}
+.header{background:#4CAF50;color:white;padding:15px;border-radius:8px;text-align:center;margin-bottom:20px;}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ddd;padding:8px;text-align:left;}
+th{background:#f8f9fa;}
+.score-high{color:#27ae60;font-weight:bold;}
+.score-medium{color:#f39c12;}
+.score-low{color:#e74c3c;}
+</style>
 </head>
 <body>
-  <div class="container">
-    <div class="header"><h1>📊 Багшийн хяналтын самбар</h1></div>
-
-    <!-- Student Table -->
-    <table>
-      <thead>
-        <tr>
-          <th>Сурагчийн нэр</th>
-          <th>Код</th>
-          <th>Ирц</th>
-          <th>Нэвтэрсэн цаг</th>
-          <th>Бататгалын оноо</th>
-          <th>Төлөв</th>
-        </tr>
-      </thead>
-      <tbody id="studentTableBody"></tbody>
-    </table>
-
-    <!-- Student Login -->
-    <h3>Сурагч нэвтрэх</h3>
-    <input type="text" id="studentCode" placeholder="Сурагчийн код">
-    <button onclick="studentLogin()">Нэвтрэх</button>
-
-    <script type="module">
-      import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
-      const db = getDatabase();
-
-      function studentLogin() {
-        const code = document.getElementById('studentCode').value.trim();
-        if(!code) return alert('Код оруулна уу');
-
-        const now = new Date();
-        const timeString = now.getHours().toString().padStart(2,'0') + ':' +
-                           now.getMinutes().toString().padStart(2,'0');
-
-        set(ref(db, 'attendanceData/' + code), timeString)
-          .then(()=> alert('Амжилттай нэвтэрлээ!'))
-          .catch(err=> alert('Алдаа гарлаа: ' + err));
-      }
-
-      window.studentLogin = studentLogin;
-    </script>
-  </div>
-
-  <script>
-    // First render
-    updateDashboard();
-  </script>
+<div class="container">
+  <div class="header"><h1>📊 Багшийн Самбар</h1></div>
+  <table>
+    <thead>
+      <tr>
+        <th>Сурагчийн нэр</th>
+        <th>Код</th>
+        <th>Ирц</th>
+        <th>Нэвтэрсэн цаг</th>
+        <th>Бататгалын оноо</th>
+        <th>Төлөв</th>
+      </tr>
+    </thead>
+    <tbody id="studentTableBody"></tbody>
+  </table>
+</div>
+<script>updateDashboard();</script>
 </body>
 </html>
