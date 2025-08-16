@@ -7,32 +7,34 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.24.0/firebase-database.js";
 
-// Firebase тохиргоо
-const firebaseConfig = {
-  apiKey: "AIzaSyAmxVtMKNhljn1ITsoNRPvpYudivEFRyJw",
-  authDomain: "mathmotivation-95bfd.firebaseapp.com",
-  databaseURL: "https://mathmotivation-95bfd-default-rtdb.firebaseio.com/",
-  projectId: "mathmotivation-95bfd",
-  storageBucket: "mathmotivation-95bfd.appspot.com",
-  messagingSenderId: "727534124610",
-  appId: "1:727534124610:web:32f4b7ef3d646ea49f77db"
-};
-
+const firebaseConfig = { /* таны Firebase config */ };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
 window.attendanceData = {};
 window.scoresData = {};
 
-// Realtime listener
-onValue(ref(db,'attendanceData'), snapshot => {
-  window.attendanceData = snapshot.val() || {};
-  updateDashboard();
-});
-onValue(ref(db,'scoresData'), snapshot => {
-  window.scoresData = snapshot.val() || {};
-  updateDashboard();
-});
+// Багшийн login код
+const TEACHER_CODE = "1234"; // та өөр код тохируулж болно
+
+function teacherLogin() {
+  const code = prompt("Багшийн код оруулна уу:");
+  if(code !== TEACHER_CODE) return alert("Буруу код!");
+  document.getElementById('loginDiv').style.display='none';
+  document.getElementById('dashboardDiv').style.display='block';
+  startRealtime();
+}
+
+function startRealtime() {
+  onValue(ref(db,'attendanceData'), snapshot => {
+    window.attendanceData = snapshot.val() || {};
+    updateDashboard();
+  });
+  onValue(ref(db,'scoresData'), snapshot => {
+    window.scoresData = snapshot.val() || {};
+    updateDashboard();
+  });
+}
 
 // Сурагчдын жагсаалт
 const studentsData = [
@@ -73,10 +75,11 @@ function updateDashboard() {
   });
 }
 
+window.teacherLogin = teacherLogin;
 window.updateDashboard = updateDashboard;
 </script>
 
-<style> 
+<style>
 body{font-family:Arial;margin:20px;background:#f4f4f4;}
 .container{max-width:1200px;margin:auto;background:white;padding:20px;border-radius:10px;}
 .header{background:#4CAF50;color:white;padding:15px;border-radius:8px;text-align:center;margin-bottom:20px;}
@@ -90,21 +93,27 @@ th{background:#f8f9fa;}
 </head>
 <body>
 <div class="container">
-  <div class="header"><h1>📊 Багшийн Самбар</h1></div>
-  <table>
-    <thead>
-      <tr>
-        <th>Сурагчийн нэр</th>
-        <th>Код</th>
-        <th>Ирц</th>
-        <th>Нэвтэрсэн цаг</th>
-        <th>Бататгалын оноо</th>
-        <th>Төлөв</th>
-      </tr>
-    </thead>
-    <tbody id="studentTableBody"></tbody>
-  </table>
+  <div id="loginDiv">
+    <h2>Багшийн нэвтрэлт</h2>
+    <button onclick="teacherLogin()">Нэвтрэх</button>
+  </div>
+
+  <div id="dashboardDiv" style="display:none;">
+    <div class="header"><h1>📊 Багшийн Самбар</h1></div>
+    <table>
+      <thead>
+        <tr>
+          <th>Сурагчийн нэр</th>
+          <th>Код</th>
+          <th>Ирц</th>
+          <th>Нэвтэрсэн цаг</th>
+          <th>Бататгалын оноо</th>
+          <th>Төлөв</th>
+        </tr>
+      </thead>
+      <tbody id="studentTableBody"></tbody>
+    </table>
+  </div>
 </div>
-<script>updateDashboard();</script>
 </body>
 </html>
