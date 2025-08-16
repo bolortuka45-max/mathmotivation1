@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="mn">
 <head>
@@ -122,21 +121,29 @@
   </div>
 
   <script>
-    // Сурагчдын мэдээлэл авах
-    let studentsData = [];
+    // Сурагчдын мэдээлэл энд шууд байна
+    let studentsData = [
+      { "name": "Х.Амарбаясгалан", "code": "1011" },
+      { "name": "Т.Бархасбаяр", "code": "2319" },
+      { "name": "Г.Мичидмаа", "code": "2205" },
+      { "name": "Э.Эрдэнэтунгалаг", "code": "1228" },
+      { "name": "Э.Билгүүнбаяр", "code": "2818" },
+      { "name": "Б.Энхзаяа", "code": "3005" },
+      { "name": "Б.Эрхэс", "code": "1043" },
+      { "name": "Б.Цэлмэг", "code": "0618" },
+      { "name": "Г.Тэмүүлэн", "code": "0315" },
+      { "name": "С.Халиунаа", "code": "2225" },
+      { "name": "Т.Даваабаатар", "code": "1117" },
+      { "name": "А.Энхзул", "code": "0421" },
+      { "name": "Ө.Хүслэнбаяр", "code": "0376" },
+      { "name": "Х.Бадар-Ууган", "code": "0816" },
+      { "name": "Н.Нандин-Эрдэнэ", "code": "2106" },
+      { "name": "Б.Батцэцэг", "code": "0147" }
+    ];
+
+    // LocalStorage доторх мэдээлэл
     let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
     let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
-
-    // Сурагчдын жагсаалт ачаалах
-    fetch('students.json')
-      .then(response => response.json())
-      .then(data => {
-        studentsData = data.filter(student => student.role !== 'teacher');
-        updateDashboard();
-      })
-      .catch(error => {
-        console.error('Алдаа:', error);
-      });
 
     function updateDashboard() {
       updateGeneralStats();
@@ -249,8 +256,11 @@
       document.body.removeChild(link);
     }
 
-    // 5 секунд тутамд шинэчлэх
+    // 5 секунд тутам шинэчлэх
     setInterval(updateDashboard, 5000);
+
+    // Эхний ачаалал
+    updateDashboard();
   </script>
 </body>
 </html>
