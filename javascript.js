@@ -8,14 +8,14 @@ const topics = {
   math: {
     name: "Математик",
     subtopics: [
-      { title: "Тооны үндэс", image: "images/numbers.jpg", description: "Энэ хэсэгт бид тооны үндэсийг судална." },
+      { title: "Тооны үндэс", image: "images/images/math.jpg", description: "Энэ хэсэгт бид тооны үндэсийг судална." },
       { title: "Нэмэх, хасах", image: "images/add_subtract.jpg", description: "Нэмэх, хасах үйлдлийг давтан хийнэ." }
     ]
   },
   history: {
     name: "Түүх",
     subtopics: [
-      { title: "Монголын түүх", image: "images/mongolia_history.jpg", description: "Монгол улсын түүхэн замнал." },
+      { title: "Монголын түүх", image: "images/images/history.jpg", description: "Монгол улсын түүхэн замнал." },
       { title: "Дэлхийн түүх", image: "images/world_history.jpg", description: "Дэлхийн чухал түүхэн үйл явдлууд." }
     ]
   }
