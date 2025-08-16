@@ -104,33 +104,32 @@
   </div>
 
   <script>
-   function checkAnswer(e) {
-  e.preventDefault();
-  const name = localStorage.getItem('studentName') || 'Нэргүй';
-  const answers = {q1:'c', q2:'a', q3:'b'};
-  let correct = 0;
+    function checkAnswer(e) {
+      e.preventDefault();
 
-  for(let key in answers){
-    const val = document.querySelector(`input[name="${key}"]:checked`);
-    if(val && val.value === answers[key]) correct++;
-  }
+      const name = localStorage.getItem('studentName') || 'Нэргүй';
+      const studentCode = localStorage.getItem('studentCode') || '0000';
 
-  // 1. Процент оноо
-  let score = Math.round((correct / 3) * 100);
+      const answers = {q1:'c', q2:'a', q3:'b'};
+      let correct = 0;
 
-  // 2. LocalStorage-д хадгалах
-  const studentCode = localStorage.getItem('studentCode') || '0000';
-  let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
-  scoresData[studentCode] = score;
-  localStorage.setItem('scoresData', JSON.stringify(scoresData));
+      for(let key in answers){
+        const val = document.querySelector(`input[name="${key}"]:checked`);
+        if(val && val.value === answers[key]) correct++;
+      }
 
-  // 3. Үр дүнг харуулах
-  document.getElementById('result').textContent = `${name}, та ${correct}/3 зөв хариуллаа. (Оноо: ${score}%)`;
-}
+      // Оноо хувиар
+      let score = Math.round((correct / 3) * 100);
 
+      // LocalStorage-д хадгалах
+      let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
+      scoresData[studentCode] = score;
+      localStorage.setItem('scoresData', JSON.stringify(scoresData));
+
+      // Үр дүнг харуулах
+      document.getElementById('result').textContent =
+        `${name}, та ${correct}/3 зөв хариуллаа. (Оноо: ${score}%)`;
     }
-</body>
-</html>
-
+  </script>
 </body>
 </html>
