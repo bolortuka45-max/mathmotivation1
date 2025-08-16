@@ -19,7 +19,7 @@
       messagingSenderId: "727534124610",
       appId: "1:727534124610:web:32f4b7ef3d646ea49f77db"
     };
- 
+
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -103,7 +103,7 @@
   </div>
 
   <script>
-    // Сурагчдын мэдээлэл
+    // Сурагчдын мэдээлэл (hard-coded)
     const studentsData = [
       { "name": "Х.Амарбаясгалан", "code": "1011" },
       { "name": "Т.Бархасбаяр", "code": "2319" },
@@ -132,7 +132,7 @@
 
     function updateGeneralStats() {
       const totalStudents = studentsData.length;
-      const todayAttendance = Object.keys(attendanceData).length;
+      const todayAttendance = Object.keys(attendanceData || {}).length;
       const attendanceRate = totalStudents > 0 ? Math.round((todayAttendance / totalStudents) * 100) : 0;
 
       document.getElementById('totalStudents').textContent = totalStudents;
@@ -145,9 +145,10 @@
       tbody.innerHTML = '';
 
       studentsData.forEach(student => {
-        const isPresent = attendanceData[student.code];
+        const isPresent = attendanceData[student.code] || false;
+        const loginTime = attendanceData[student.code] || '-';
         const score = scoresData[student.code] || 0;
-        
+
         let scoreClass = 'score-low';
         if (score >= 80) scoreClass = 'score-high';
         else if (score >= 60) scoreClass = 'score-medium';
@@ -157,7 +158,7 @@
           <td>${student.name}</td>
           <td>${student.code}</td>
           <td>${isPresent ? '✅ Ирсэн' : '❌ Ирээгүй'}</td>
-          <td>${isPresent ? attendanceData[student.code] : '-'}</td>
+          <td>${loginTime}</td>
           <td class="${scoreClass}">${score}%</td>
           <td>${getStudentStatus(isPresent, score)}</td>
         `;
@@ -166,7 +167,7 @@
     }
 
     function updateAverageScores() {
-      const scores = Object.values(scoresData);
+      const scores = Object.values(scoresData || {});
       const average = scores.length > 0 ? Math.round(scores.reduce((a,b)=>a+b,0)/scores.length) : 0;
       const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
       const minScore = scores.length > 0 ? Math.min(...scores) : 0;
@@ -189,7 +190,7 @@
     function exportToCSV(){
       let csvContent = "Сурагчийн нэр,Код,Ирц,Нэвтэрсэн цаг,Бататгалын оноо,Төлөв\n";
       studentsData.forEach(student=>{
-        const isPresent = attendanceData[student.code];
+        const isPresent = attendanceData[student.code] || false;
         const score = scoresData[student.code] || 0;
         const loginTime = isPresent ? attendanceData[student.code] : '-';
         const status = getStudentStatus(isPresent, score);
@@ -224,7 +225,7 @@
       link.style.visibility='hidden'; document.body.appendChild(link); link.click(); document.body.removeChild(link);
     }
 
-    // Dashboard update-г глобал болгож Firebase script-аас дуудуулж болно
+    // Dashboard-г глобал болгож Firebase script-аас дуудуулна
     window.updateDashboard = updateDashboard;
 
   </script>
