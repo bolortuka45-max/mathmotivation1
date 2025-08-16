@@ -103,9 +103,31 @@
     function checkAnswer(e){
       e.preventDefault();
       const name = localStorage.getItem('studentName') || 'Нэргүй';
+      const studentCode = localStorage.getItem('studentCode') || '0000';
       const val = document.querySelector('input[name="q1"]:checked');
-      const correct = val && val.value === 'a' ? 1 : 0;
-      document.getElementById('result').textContent = `${name}, та ${correct}/1 зөв хариуллаа.`;
+
+      if(!val){
+        document.getElementById('result').textContent = "Хариулт оруулна уу.";
+        return;
+      }
+
+      // зөв хариулт
+      const correctAnswer = 'a';
+      const score = val.value === correctAnswer ? 100 : 0;
+
+      // LocalStorage-д хадгалах
+      let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
+      scoresData[studentCode] = score;
+      localStorage.setItem('scoresData', JSON.stringify(scoresData));
+
+      // Үр дүнг харуулах
+      document.getElementById('result').textContent = 
+        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${score}%)`;
+
+      // Багшийн самбарт харагдах боломж
+      if(window.updateDashboard){
+        updateDashboard(); // хэрэв updateDashboard функц байгаа бол оноо шинэчилнэ
+      }
     }
   </script>
 </body>
