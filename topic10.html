@@ -81,12 +81,31 @@
   <script>
     function checkAnswer(){
       const name = localStorage.getItem('studentName') || 'Нэргүй';
+      const studentCode = localStorage.getItem('studentCode') || '0000';
       const answer = document.getElementById('answer').value.trim();
+
       if(answer === ""){
         document.getElementById('result').textContent = "Хариулт оруулна уу.";
         return;
       }
-      document.getElementById('result').textContent = `${name}, таны хариулт бүртгэгдлээ.`;
+
+      // ===== Жишээ зөв хариулт =====
+      const correctAnswer = "тэгш"; // Та хүссэн үнэлгээний логикыг өөрчилж болно
+      let score = (answer.toLowerCase() === correctAnswer) ? 100 : 0;
+
+      // ===== LocalStorage-д хадгалах =====
+      let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
+      scoresData[studentCode] = score;
+      localStorage.setItem('scoresData', JSON.stringify(scoresData));
+
+      // ===== Үр дүнг харуулах =====
+      document.getElementById('result').textContent = 
+        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${score}%)`;
+
+      // ===== Багшийн самбард харагдах логик =====
+      if(window.updateDashboard){
+        updateDashboard(); // Хэрэв багшийн самбар ашиглаж байгаа бол энэ функц нь оноог шинэчилнэ
+      }
     }
   </script>
 </body>
