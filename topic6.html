@@ -25,58 +25,15 @@
       text-align: center;
     }
 
-    h1 {
-      color: #333;
-    }
-
-    p {
-      font-weight: bold;
-      margin-top: 20px;
-      color: #444;
-    }
-
-    label {
-      display: block;
-      background: #f1f3f5;
-      padding: 10px;
-      border-radius: 8px;
-      margin: 8px 0;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    label:hover {
-      background: #dee2e6;
-    }
-
-    input[type="radio"] {
-      margin-right: 10px;
-      transform: scale(1.2);
-    }
-
-    button {
-      margin-top: 20px;
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background: #45a049;
-      transform: translateY(-2px);
-    }
-
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 16px;
-      text-align: center;
-    }
+    h1 { color: #333; }
+    p { font-weight: bold; margin-top: 20px; color: #444; }
+    label { display: block; background: #f1f3f5; padding: 10px; border-radius: 8px; margin: 8px 0; cursor: pointer; transition: background 0.2s; }
+    label:hover { background: #dee2e6; }
+    input[type="radio"] { margin-right: 10px; transform: scale(1.2); }
+    select { width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e9ecef; font-size: 16px; margin-top: 10px; }
+    button { margin-top: 20px; padding: 12px 25px; font-size: 16px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 10px; transition: background 0.3s, transform 0.2s; }
+    button:hover { background: #45a049; transform: translateY(-2px); }
+    #result { margin-top: 20px; font-weight: bold; font-size: 16px; text-align: center; }
   </style>
 </head>
 <body>
@@ -87,6 +44,16 @@
       <label><input type="radio" name="q1" value="a"> 3(x-2)</label>
       <label><input type="radio" name="q1" value="b"> 3/2*(2-x)</label>
       <label><input type="radio" name="q1" value="c"> 2-x</label>
+
+      <p>📚 Өнөөдрийн хичээлийн ойлголт хэр сайн байна вэ?</p>
+      <select id="understanding">
+        <option value="">-- Сонгоно уу --</option>
+        <option value="95">Маш сайн</option>
+        <option value="80">Сайн</option>
+        <option value="65">Дунд</option>
+        <option value="40">Ойлгосонгүй</option>
+      </select>
+
       <button type="submit">Илгээх</button>
     </form>
     <p id="result"></p>
@@ -95,31 +62,35 @@
   <script>
     function checkAnswer(e){
       e.preventDefault();
-
       const name = localStorage.getItem('studentName') || 'Нэргүй';
       const studentCode = localStorage.getItem('studentCode') || '0000';
       const val = document.querySelector('input[name="q1"]:checked');
+      const understanding = document.getElementById('understanding').value;
 
       if(!val){
         document.getElementById('result').textContent = "Хариулт оруулна уу.";
         return;
       }
+      if(!understanding){
+        document.getElementById('result').textContent = "Өнөөдрийн ойлголтын үнэлгээг сонгоно уу.";
+        return;
+      }
 
       const correctAnswer = 'b';
-      const score = val.value === correctAnswer ? 100 : 0;
+      const quizScore = val.value === correctAnswer ? 100 : 0;
+      const understandingScore = parseInt(understanding);
 
       // LocalStorage-д хадгалах
       let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
-      scoresData[studentCode] = score;
+      scoresData[studentCode] = {quizScore: quizScore, understandingScore: understandingScore};
       localStorage.setItem('scoresData', JSON.stringify(scoresData));
 
       // Үр дүнг харуулах
       document.getElementById('result').textContent = 
-        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${score}%)`;
+        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${quizScore}%, Өнөөдрийн ойлголт: ${understandingScore}%)`;
 
-      // Багшийн dashboard-д харагдах боломж
       if(window.updateDashboard){
-        updateDashboard(); // хэрэв updateDashboard функц байгаа бол оноо шинэчилнэ
+        updateDashboard();
       }
     }
   </script>
