@@ -67,6 +67,17 @@
       font-size: 16px;
       color: #2c3e50;
     }
+
+    .self-evaluation {
+      margin-top: 25px;
+      text-align: left;
+    }
+
+    .self-evaluation label {
+      display: block;
+      margin: 5px 0;
+      font-weight: normal;
+    }
   </style>
 </head>
 <body>
@@ -76,6 +87,15 @@
     <textarea id="answer" placeholder="Энд хариултаа бичнэ үү..."></textarea><br>
     <button onclick="checkAnswer()">Илгээх</button>
     <p id="result"></p>
+
+    <!-- Өөрийн ойлголтыг үнэлэх хэсэг -->
+    <div class="self-evaluation">
+      <h3>📝 Өнөөдрийн хичээлийн ойлголтоо үнэлнэ үү</h3>
+      <label><input type="radio" name="understanding" value="Маш сайн"> Маш сайн</label>
+      <label><input type="radio" name="understanding" value="Сайн"> Сайн</label>
+      <label><input type="radio" name="understanding" value="Дунд"> Дунд</label>
+      <label><input type="radio" name="understanding" value="Сайжруулах хэрэгтэй"> Сайжруулах хэрэгтэй</label>
+    </div>
   </div>
 
   <script>
@@ -93,18 +113,33 @@
       const correctAnswer = "тэгш"; // Та хүссэн үнэлгээний логикыг өөрчилж болно
       let score = (answer.toLowerCase() === correctAnswer) ? 100 : 0;
 
+      // ===== Self-evaluation (үнэлгээ) =====
+      const radios = document.getElementsByName('understanding');
+      let evaluation = '';
+      for(const radio of radios){
+        if(radio.checked){
+          evaluation = radio.value;
+          break;
+        }
+      }
+
+      if(!evaluation){
+        document.getElementById('result').textContent = "Өнөөдрийн ойлголтоо үнэлнэ үү!";
+        return;
+      }
+
       // ===== LocalStorage-д хадгалах =====
       let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
-      scoresData[studentCode] = score;
+      scoresData[studentCode] = { score: score, selfEval: evaluation };
       localStorage.setItem('scoresData', JSON.stringify(scoresData));
 
       // ===== Үр дүнг харуулах =====
       document.getElementById('result').textContent = 
-        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${score}%)`;
+        `${name}, таны хариулт болон үнэлгээ бүртгэгдлээ. (Оноо: ${score}%, Өөрийн үнэлгээ: ${evaluation})`;
 
-      // ===== Багшийн самбард харагдах логик =====
+      // ===== Багшийн самбарт харагдах логик =====
       if(window.updateDashboard){
-        updateDashboard(); // Хэрэв багшийн самбар ашиглаж байгаа бол энэ функц нь оноог шинэчилнэ
+        updateDashboard(); // Хэрэв багшийн самбар ашиглаж байгаа бол энэ функц нь шинэчилнэ
       }
     }
   </script>
