@@ -4,69 +4,15 @@
   <meta charset="UTF-8">
   <title>Өсөх ба буурах функц</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(to right, #f9f9f9, #e0e0e0);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      margin: 0;
-    }
-
-    .container {
-      background: #fff;
-      padding: 30px 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      max-width: 600px;
-      width: 90%;
-      text-align: center;
-    }
-
-    h1 {
-      color: #333;
-    }
-
-    p {
-      font-weight: bold;
-      color: #444;
-    }
-
-    textarea {
-      width: 90%;
-      height: 100px;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      margin-top: 10px;
-      font-size: 14px;
-      resize: vertical;
-    }
-
-    button {
-      margin-top: 15px;
-      padding: 12px 25px;
-      font-size: 16px;
-      cursor: pointer;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    button:hover {
-      background: #45a049;
-      transform: translateY(-2px);
-    }
-
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 16px;
-      color: #2c3e50;
-    }
+    body { font-family: Arial, sans-serif; background: linear-gradient(to right, #f9f9f9, #e0e0e0); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+    .container { background: #fff; padding: 30px 40px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.2); max-width: 600px; width: 90%; text-align: center; }
+    h1 { color: #333; }
+    p { font-weight: bold; color: #444; }
+    textarea { width: 90%; height: 100px; padding: 10px; border-radius: 10px; border: 1px solid #ccc; margin-top: 10px; font-size: 14px; resize: vertical; }
+    select { width: 90%; padding: 10px; border-radius: 8px; border: 2px solid #e9ecef; font-size: 16px; margin-top: 10px; }
+    button { margin-top: 15px; padding: 12px 25px; font-size: 16px; cursor: pointer; background: #4CAF50; color: white; border: none; border-radius: 10px; transition: background 0.3s, transform 0.2s; }
+    button:hover { background: #45a049; transform: translateY(-2px); }
+    #result { margin-top: 20px; font-weight: bold; font-size: 16px; color: #2c3e50; }
   </style>
 </head>
 <body>
@@ -74,6 +20,16 @@
     <h1>Өсөх ба буурах функц</h1>
     <p>Даалгаврууд энд оруулна</p>
     <textarea id="answer" placeholder="Энд хариултаа бичнэ үү..."></textarea><br>
+
+    <p>Өнөөдрийн хичээлийн ойлголт хэр сайн байна вэ?</p>
+    <select id="understanding">
+      <option value="">-- Сонгоно уу --</option>
+      <option value="95">Маш сайн</option>
+      <option value="80">Сайн</option>
+      <option value="65">Дунд</option>
+      <option value="40">Ойлгосонгүй</option>
+    </select>
+
     <button onclick="checkAnswer()">Илгээх</button>
     <p id="result"></p>
   </div>
@@ -83,26 +39,28 @@
       const name = localStorage.getItem('studentName') || 'Нэргүй';
       const studentCode = localStorage.getItem('studentCode') || '0000';
       const answer = document.getElementById('answer').value.trim();
+      const understanding = document.getElementById('understanding').value;
 
       if(answer === ""){
         document.getElementById('result').textContent = "Хариулт оруулна уу.";
         return;
       }
+      if(!understanding){
+        document.getElementById('result').textContent = "Өнөөдрийн ойлголтын үнэлгээг сонгоно уу.";
+        return;
+      }
 
-      // Зөв хариултыг энд оруулна уу (жишээ: "өсөх ба буурах")
       const correctAnswer = "өсөх ба буурах"; 
-      const score = answer.toLowerCase() === correctAnswer.toLowerCase() ? 100 : 0;
+      const quizScore = answer.toLowerCase() === correctAnswer.toLowerCase() ? 100 : 0;
+      const understandingScore = parseInt(understanding);
 
-      // LocalStorage-д хадгалах
       let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
-      scoresData[studentCode] = score;
+      scoresData[studentCode] = {quizScore: quizScore, understandingScore: understandingScore};
       localStorage.setItem('scoresData', JSON.stringify(scoresData));
 
-      // Үр дүнг харуулах
       document.getElementById('result').textContent = 
-        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${score}%)`;
+        `${name}, таны хариулт бүртгэгдлээ. (Оноо: ${quizScore}%, Өнөөдрийн ойлголт: ${understandingScore}%)`;
 
-      // Багшийн dashboard-д харагдах боломж
       if(window.updateDashboard){
         updateDashboard();
       }
