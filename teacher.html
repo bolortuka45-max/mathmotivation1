@@ -111,6 +111,7 @@
             <th>Ирц</th>
             <th>Нэвтэрсэн цаг</th>
             <th>Бататгалын оноо</th>
+            <th>Өнөөдрийн ойлголт (%)</th>
             <th>Төлөв</th>
           </tr>
         </thead>
@@ -121,7 +122,6 @@
   </div>
 
   <script>
-    // Сурагчдын мэдээлэл энд шууд байна
     let studentsData = [
       { "name": "Х.Амарбаясгалан", "code": "1011" },
       { "name": "Т.Бархасбаяр", "code": "2319" },
@@ -141,7 +141,6 @@
       { "name": "Б.Батцэцэг", "code": "0147" }
     ];
 
-    // LocalStorage доторх мэдээлэл
     let attendanceData = JSON.parse(localStorage.getItem('attendanceData')) || {};
     let scoresData = JSON.parse(localStorage.getItem('scoresData')) || {};
 
@@ -166,20 +165,22 @@
       tbody.innerHTML = '';
 
       studentsData.forEach(student => {
-        const row = document.createElement('tr');
         const isPresent = attendanceData[student.code];
-        const score = scoresData[student.code] || 0;
+        const score = scoresData[student.code] ? scoresData[student.code].quizScore || 0 : 0;
+        const understanding = scoresData[student.code] ? scoresData[student.code].understandingScore || 0 : '-';
         
         let scoreClass = 'score-low';
         if (score >= 80) scoreClass = 'score-high';
         else if (score >= 60) scoreClass = 'score-medium';
 
+        const row = document.createElement('tr');
         row.innerHTML = `
           <td>${student.name}</td>
           <td>${student.code}</td>
           <td>${isPresent ? '✅ Ирсэн' : '❌ Ирээгүй'}</td>
           <td>${isPresent ? attendanceData[student.code] : '-'}</td>
           <td class="${scoreClass}">${score}%</td>
+          <td>${understanding}%</td>
           <td>${getStudentStatus(isPresent, score)}</td>
         `;
         tbody.appendChild(row);
@@ -187,7 +188,7 @@
     }
 
     function updateAverageScores() {
-      const scores = Object.values(scoresData);
+      const scores = Object.values(scoresData).map(s => s.quizScore || 0);
       const average = scores.length > 0 ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : 0;
       const maxScore = scores.length > 0 ? Math.max(...scores) : 0;
       const minScore = scores.length > 0 ? Math.min(...scores) : 0;
@@ -207,15 +208,14 @@
     }
 
     function exportToCSV() {
-      let csvContent = "Сурагчийн нэр,Код,Ирц,Нэвтэрсэн цаг,Бататгалын оноо,Төлөв\n";
-      
+      let csvContent = "Сурагчийн нэр,Код,Ирц,Нэвтэрсэн цаг,Бататгалын оноо,Өнөөдрийн ойлголт,Төлөв\n";
       studentsData.forEach(student => {
         const isPresent = attendanceData[student.code];
-        const score = scoresData[student.code] || 0;
+        const score = scoresData[student.code] ? scoresData[student.code].quizScore || 0 : 0;
+        const understanding = scoresData[student.code] ? scoresData[student.code].understandingScore || 0 : 0;
         const loginTime = isPresent ? attendanceData[student.code] : '-';
         const status = getStudentStatus(isPresent, score);
-        
-        csvContent += `"${student.name}","${student.code}","${isPresent ? 'Ирсэн' : 'Ирээгүй'}","${loginTime}","${score}%","${status}"\n`;
+        csvContent += `"${student.name}","${student.code}","${isPresent ? 'Ирсэн' : 'Ирээгүй'}","${loginTime}","${score}%","${understanding}%","${status}"\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -235,14 +235,19 @@
         totalStudents: studentsData.length,
         attendance: attendanceData,
         scores: scoresData,
-        students: studentsData.map(student => ({
-          name: student.name,
-          code: student.code,
-          present: !!attendanceData[student.code],
-          loginTime: attendanceData[student.code] || null,
-          score: scoresData[student.code] || 0,
-          status: getStudentStatus(!!attendanceData[student.code], scoresData[student.code] || 0)
-        }))
+        students: studentsData.map(student => {
+          const quizScore = scoresData[student.code] ? scoresData[student.code].quizScore || 0 : 0;
+          const understandingScore = scoresData[student.code] ? scoresData[student.code].understandingScore || 0 : 0;
+          return {
+            name: student.name,
+            code: student.code,
+            present: !!attendanceData[student.code],
+            loginTime: attendanceData[student.code] || null,
+            score: quizScore,
+            understandingScore: understandingScore,
+            status: getStudentStatus(!!attendanceData[student.code], quizScore)
+          };
+        })
       };
 
       const blob = new Blob([JSON.stringify(reportData, null, 2)], { type: 'application/json' });
@@ -256,10 +261,7 @@
       document.body.removeChild(link);
     }
 
-    // 5 секунд тутам шинэчлэх
     setInterval(updateDashboard, 5000);
-
-    // Эхний ачаалал
     updateDashboard();
   </script>
 </body>
